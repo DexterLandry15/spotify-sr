@@ -108,9 +108,16 @@ Bot.on('error', err => {
 })
 
 Bot.on('message', async chatter => {
-  if(chatter.message.toLowerCase() === '!cr' || chatter.message.toLowerCase() === '!np') {
-    let track = await get_current();
-    Bot.say(track)
-  }
+  const command = chatter.message.toLowerCase()
+
+  switch(command) {
+    case "!np":
+      Bot.say(await get_current());
+      break
+    case "!cr":
+      Bot.say(await get_current());
+      break
+    }
+
 
 })
