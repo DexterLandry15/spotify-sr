@@ -13,9 +13,14 @@ async function song_request(name) {
   let res;
   await spotifyApi.searchTracks(name, { limit: 1 }).then(
     function (data) {
-      let song_url = data.body.tracks.items[0].external_urls.spotify;
-      res = `added to queue: ${data.body.tracks.items[0].artists[0].name} - ${data.body.tracks.items[0].name}`;
-      spotifyApi.addToQueue(song_url);
+      if (!!data.body.tracks.items[0]) {
+        let song_url = data.body.tracks.items[0].external_urls.spotify;
+        res = `added to queue: ${data.body.tracks.items[0].artists[0].name} - ${data.body.tracks.items[0].name}`;
+        spotifyApi.addToQueue(song_url);
+      } else {
+        res = 'not found'
+      }
+
     },
     function (err) {
       console.error(err);
