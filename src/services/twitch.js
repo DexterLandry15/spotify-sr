@@ -4,8 +4,12 @@ const { spotifyApi, client } = require("../config");
 async function get_current() {
 	let data;
 	await spotifyApi.getMyCurrentPlayingTrack().then(function (res) {
-    let track_info = res.body.item;
-		data = `${track_info.artists.map((e) => {return e.name}).join(', ')} - ${track_info.name}`;
+		let track_info = res.body.item;
+		data = `${track_info.artists
+			.map((e) => {
+				return e.name;
+			})
+			.join(", ")} - ${track_info.name}`;
 	});
 
 	return data;
@@ -15,10 +19,13 @@ async function song_request(name) {
 	let res;
 	await spotifyApi.searchTracks(name, { limit: 1 }).then(
 		function (data) {
-      let track_info = data.body.tracks.items[0];
+			let track_info = data.body.tracks.items[0];
 			if (!!track_info) {
-
-				res = `added to queue: ${track_info.artists.map((e) => {return e.name}).join(', ')} - ${track_info.name}`;
+				res = `added to queue: ${track_info.artists
+					.map((e) => {
+						return e.name;
+					})
+					.join(", ")} - ${track_info.name}`;
 				spotifyApi.addToQueue(track_info.external_urls.spotify);
 			} else {
 				res = "not found";

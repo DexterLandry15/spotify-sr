@@ -22,11 +22,7 @@ app.get("/", async (req, res) => {
 
 app.get("/callback:code", async (req, res) => {
 	var code = req.query.code;
-	let json = { code: code };
-	//json = JSON.stringify(json)
-	fs.writeFile("./code.json", JSON.stringify(json), function () {
-		get_token();
-	});
+	await get_token(code);
 	res.send("ok");
 });
 
@@ -38,15 +34,4 @@ exports.start_server = async function () {
 	} catch (err) {
 		console.log(err);
 	}
-};
-
-exports.stop_server = async function () {
-	fastify.close().then(
-		() => {
-			console.log("successfully closed!");
-		},
-		(err) => {
-			console.log("an error happened", err);
-		}
-	);
 };
