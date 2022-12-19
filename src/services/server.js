@@ -23,8 +23,12 @@ app.get("/", async (req, res) => {
 app.get("/callback:code", async (req, res) => {
 	var code = req.query.code;
 	await get_token(code);
-	res.send("ok");
+	res.redirect("/ok");
 });
+
+app.get("/ok", (req, res) => {
+	res.send("ok")
+})
 
 exports.start_server = async function () {
 	try {
