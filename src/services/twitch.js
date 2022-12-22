@@ -1,5 +1,7 @@
 require("dotenv").config();
 const { spotifyApi, client } = require("../config");
+const { getToken } = require("./test");
+
 async function get_current() {
 	let data;
 	await spotifyApi.getMyCurrentPlayingTrack().then(function (res) {
@@ -17,27 +19,27 @@ async function get_current() {
 async function song_request(name) {
 	let res;
 	if (!name) {
-		res = "ok"
+		res = "ok";
 	} else {
-	await spotifyApi.searchTracks(name, { limit: 1 }).then(
-		function (data) {
-			let track_info = data.body.tracks.items[0];
-			if (!!track_info) {
-				res = `added to queue: ${track_info.artists
-					.map((e) => {
-						return e.name;
-					})
-					.join(", ")} - ${track_info.name}`;
-				spotifyApi.addToQueue(track_info.external_urls.spotify);
-			} else {
-				res = "not found";
+		await spotifyApi.searchTracks(name, { limit: 1 }).then(
+			function (data) {
+				let track_info = data.body.tracks.items[0];
+				if (!!track_info) {
+					res = `added to queue: ${track_info.artists
+						.map((e) => {
+							return e.name;
+						})
+						.join(", ")} - ${track_info.name}`;
+					spotifyApi.addToQueue(track_info.external_urls.spotify);
+				} else {
+					res = "not found";
+				}
+			},
+			function (err) {
+				console.error(err);
 			}
-		},
-		function (err) {
-			console.error(err);
-		}
-	);
-}
+		);
+	}
 	return res;
 }
 async function skip() {
@@ -45,15 +47,16 @@ async function skip() {
 }
 
 exports.connect_client = () => {
-	client.connect();
+	client.connect().then(() => {
+		getToken();
+	});
 };
 let player = false;
 
-
-//player 
+//player
 client.on("message", async (channel, tags, message, self) => {
 	if (self || !message.startsWith("!")) return;
-	
+
 	const args = message.slice(1).split(" ");
 	const command = args.shift().toLowerCase();
 
@@ -64,13 +67,13 @@ client.on("message", async (channel, tags, message, self) => {
 			break;
 		case "sr":
 			if (!player) {
-				client.say(channel, "disabled")
+				client.say(channel, "disabled");
 			} else {
-			client.say(channel, await song_request(args.join(" ")));
-		}
+				client.say(channel, await song_request(args.join(" ")));
+			}
 			break;
 		case "skip":
-			if (tags["mod"]  && player === true) {
+			if (tags["mod"] && player === true) {
 				await skip();
 				client.say(channel, "skipped");
 			} else {
@@ -79,23 +82,23 @@ client.on("message", async (channel, tags, message, self) => {
 			break;
 		case "p":
 		case "player":
-			if (!args[0]){
-			client.say(channel, `${player}`)
+			if (!args[0]) {
+				client.say(channel, `${player}`);
 			}
-			if(tags["display-name"] === "dexter_landry"){
+			if (tags["display-name"] === "dexter_landry") {
 				switch (args[0]) {
 					case "e":
 					case "enable":
 						player = true;
 						break;
 					case "d":
-					case "disable":	
-						player = false
+					case "disable":
+						player = false;
 						break;
 				}
 			} else {
-				client.say(channel, "ligma balls")
+				client.say(channel, "ligma balls");
 			}
-		break
+			break;
 	}
 });

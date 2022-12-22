@@ -1,33 +1,24 @@
-require("dotenv").config();
+require("dotenv").config({ path: "../../.env" });
+const fetch = require("node-fetch");
 const { spotifyApi } = require("../config");
-let executed = false
-exports.get_token = async (authorizationCode) => {
-	if (executed === false) {
-		executed = true;
-		let expiration_time;
-		await spotifyApi
-			.authorizationCodeGrant(authorizationCode)
-			.then(function (data) {
-				console.log("ok");
-				spotifyApi.setAccessToken(data.body["access_token"]);
-				spotifyApi.setRefreshToken(data.body["refresh_token"]);
-				expiration_time = data.body["expires_in"];
-			})
-			.catch(function (err) {
-				console.log("Something went wrong:", err.message);
-			});
-		setInterval(async () => {
-			console.log("refreshed");
-			spotifyApi
-				.refreshAccessToken()
-				.then((data) => {
-					spotifyApi.setAccessToken(data.body["access_token"]);
-					expiration_time = data.body["expires_in"];
-				})
-				.catch(function (err) {
-					console.log("Something went wrong:", err.message);
-				});
-		}, expiration_time * 1000);
 
-	}
+exports.getToken = async () => {
+	let res = await fetch(
+		"https://open.spotify.com/get_access_token?reason=transport&productType=web_player",
+		{
+			headers: {
+				cookie: `sp_dc=${process.env.SP_DC}`,
+			},
+		}
+	);
+	let body = await res.json();
+
+	let expirationTime = body.accessTokenExpirationTimestampMs - Date.now();
+	let token = body.accessToken;
+
+	spotifyApi.setAccessToken(token);
+
+	setInterval(() => {
+		getToken();
+	}, expirationTime);
 };
