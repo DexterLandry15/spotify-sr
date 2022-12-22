@@ -13,12 +13,13 @@ exports.getToken = async () => {
 	);
 	let body = await res.json();
 
-	let expirationTime = body.accessTokenExpirationTimestampMs - Date.now();
+	let expirationTime = (body.accessTokenExpirationTimestampMs - Date.now());
 	let token = body.accessToken;
 
 	spotifyApi.setAccessToken(token);
 
-	setInterval(() => {
-		getToken();
+	setTimeout(() => {
+		console.log("refreshed")
+		this.getToken()
 	}, expirationTime);
 };

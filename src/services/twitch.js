@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { spotifyApi, client } = require("../config");
-const { getToken } = require("./test");
+const { getToken } = require("./spotify");
 
 async function get_current() {
 	let data;
@@ -48,7 +48,7 @@ async function skip() {
 
 exports.connect_client = () => {
 	client.connect().then(() => {
-		getToken();
+		getToken()
 	});
 };
 let player = false;
