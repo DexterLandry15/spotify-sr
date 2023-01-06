@@ -5,14 +5,17 @@ const { getToken } = require("./spotify");
 async function get_current() {
 	let data;
 	await spotifyApi.getMyCurrentPlayingTrack().then(function (res) {
-		let track_info = res.body.item;
-		data = `${track_info.artists
-			.map((e) => {
-				return e.name;
-			})
-			.join(", ")} - ${track_info.name}`;
+		if (Object.keys(res.body).length == 0) {
+			data = "nothing"
+		} else {
+			let track_info = res.body.item;
+				data = `${track_info.artists
+					.map((e) => {
+						return e.name;
+					})
+					.join(", ")} - ${track_info.name}`;
+		}
 	});
-
 	return data;
 }
 
@@ -56,7 +59,7 @@ let player = false;
 //player
 client.on("message", async (channel, tags, message, self) => {
 	if (self || !message.startsWith("!")) return;
-
+	tags[""]
 	const args = message.slice(1).split(" ");
 	const command = args.shift().toLowerCase();
 
