@@ -59,7 +59,7 @@ let player = false;
 //player
 client.on("message", async (channel, tags, message, self) => {
 	if (self || !message.startsWith("!")) return;
-	tags[""]
+
 	const args = message.slice(1).split(" ");
 	const command = args.shift().toLowerCase();
 
