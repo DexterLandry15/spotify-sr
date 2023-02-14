@@ -4,7 +4,7 @@ const { getToken } = require("./spotify");
 
 
 
-const restrictedMsg = "you don't have rights to use this command"
+const restrictedMsg = "you don't have rights to use this command";
 
 async function get_current() {
 	let data;
