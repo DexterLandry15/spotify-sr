@@ -2,6 +2,10 @@ require("dotenv").config();
 const { spotifyApi, client } = require("../config");
 const { getToken } = require("./spotify");
 
+
+
+const restrictedMsg = "you don't have rights to use this command"
+
 async function get_current() {
 	let data;
 	await spotifyApi.getMyCurrentPlayingTrack().then(function (res) {
@@ -59,7 +63,6 @@ let player = false;
 //player
 client.on("message", async (channel, tags, message, self) => {
 	if (self || !message.startsWith("!")) return;
-
 	const args = message.slice(1).split(" ");
 	const command = args.shift().toLowerCase();
 
@@ -76,20 +79,21 @@ client.on("message", async (channel, tags, message, self) => {
 			}
 			break;
 		case "skip":
-			if (tags["mod"] && player === true) {
+			if ((tags["mod"] || (tags["badges"] && tags["badges"]["broadcaster"])) && player === true) {
 				await skip();
 				client.say(channel, "skipped");
 			} else {
-				client.say(channel, "ligma balls");
+				client.say(channel, restrictedMsg);
 			}
 			break;
 		case "p":
 		case "player":
-			if (!args[0]) {
-				client.say(channel, `${player}`);
-			}
-			if (tags["display-name"] === "dexter_landry") {
+			if (!args[0]) return
+			if (tags["badges"] && tags["badges"]["broadcaster"]) {
 				switch (args[0]) {
+					case "s":
+					case "status":
+						client.say(channel, (player ? `enabled` : `disabled`))
 					case "e":
 					case "enable":
 						player = true;
@@ -100,7 +104,7 @@ client.on("message", async (channel, tags, message, self) => {
 						break;
 				}
 			} else {
-				client.say(channel, "ligma balls");
+				client.say(channel, restrictedMsg);
 			}
 			break;
 	}
