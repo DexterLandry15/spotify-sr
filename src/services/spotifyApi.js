@@ -43,6 +43,7 @@ export class SpotifyApi {
 
     async addToQueue(channel, query) {
         let data = await this.searchTrack(channel, query)
+        if (!data) return false;
         await p({
             url: `${this.spotifyApiUrl}/me/player/queue?uri=${data.track.uri}`,
             method: 'POST',
@@ -56,7 +57,7 @@ export class SpotifyApi {
 
     async searchTrack(channel, query) {
         return await this._checkToken(channel).then(async (token) => {
-            let res = await p({
+            const res = await p({
                 url: `${this.spotifyApiUrl}/search?q=${query}&type=track&limit=1`,
                 method: 'GET',
                 headers: {
@@ -64,7 +65,9 @@ export class SpotifyApi {
                     'Content-Type': 'application/json'
                 }
             });
-            return {token: token, track: JSON.parse(res.body.toString()).tracks.items[0]};
+            const data = JSON.parse(res.body.toString())
+            if (!data.tracks.items[0]) return false;
+            return {token: token, track: data.tracks.items[0]};
         });
     };
 

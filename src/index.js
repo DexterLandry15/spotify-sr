@@ -77,6 +77,7 @@ client.on('message', async (channel, tags, message, self) => {
         break;
         case 'sr':
             client.say(channel, 'added to queue: ' + await api.addToQueue(channelName, args).then((data) => {
+                if (!data) return 'нихуя не аддед я не нашол';
                 return `${data.artists.map((e) => {
                     return e.name;
                 }).join(", ")} - ${data.name}`;

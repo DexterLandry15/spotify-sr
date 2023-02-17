@@ -4,6 +4,7 @@ export class DB {
 
     constructor(dbName) {
         this.db = new Database(`src/db/${dbName}.db`, {
+           /*  verbose: console.log, */
             fileMustExist: true
         });
     };
