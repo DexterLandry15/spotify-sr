@@ -2,6 +2,7 @@
   "name": "spotify-sr",
   "version": "1.0.0",
   "description": "",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -10,13 +11,19 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "better-sqlite3": "^8.1.0",
     "discord.js": "^14.6.0",
     "dotenv": "^16.0.3",
     "fastify": "^4.8.1",
+    "http-cookie-agent": "^5.0.2",
     "node-fetch": "^2.6.7",
+    "phin": "^3.7.0",
     "randomstring": "^1.2.2",
     "spotify-web-api-node": "^5.0.2",
-    "tmi.js": "^1.8.5"
+    "sqlite": "^4.1.2",
+    "sqlite3": "^5.1.4",
+    "tmi.js": "^1.8.5",
+    "tough-cookie": "^4.1.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.20",
