@@ -29,13 +29,13 @@ client.on('message', async (channel, tags, message, self) => {
     switch (command) {
         case "p":
 		case "player":
-			if (!args[0]) return
+			//if (!args[0]) return
 			if (tags["badges"] && tags["badges"]["broadcaster"]) {
 				switch (args[0]) {
-					case "s":
+					/*case "s":
 					case "status":
 						client.say(channel, (player ? `enabled` : `disabled`));
-                        break;
+                        break;*/
 					case "e":
 					case "enable":
 						db.set('user', channelName, {player: 1})
@@ -46,6 +46,9 @@ client.on('message', async (channel, tags, message, self) => {
                         db.set('user', channelName, {player: 0})
                         client.say(channel, 'player has been disabled on this channel!')
 						break;
+                    default:
+                        client.say(channel, (player ? 'enabled' : 'disable'));
+                        break;
             };
         } else {
             client.say(channel, restrictedMsg);
