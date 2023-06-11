@@ -7,17 +7,14 @@ const db = new DB('users');
 
 export class SpotifyApi {
 
-    spotifyApiUrl = `https://api.spotify.com/v1`
+    spotifyApiUrl = `https://api.spotify.com/v1`;
+
 
     async nowPlaying(channel) {
         return await this._checkToken(channel).then(async (token) => {
             let res = await p({
                 url: `${this.spotifyApiUrl}/me/player`,
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: this._headers(token)
             });
             if (!res.body.toString()) {
                 return false
@@ -33,10 +30,7 @@ export class SpotifyApi {
             return await p({
                 url: `${this.spotifyApiUrl}/me/player/next`,
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: this._headers(token)
             })
         })
     }
@@ -44,30 +38,35 @@ export class SpotifyApi {
     async addToQueue(channel, query) {
         let data = await this.searchTrack(channel, query)
         if (!data) return false;
-        await p({
-            url: `${this.spotifyApiUrl}/me/player/queue?uri=${data.track.uri}`,
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${data.token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-        return data.track;
+        return await this._checkToken(channel).then(async (token) => {
+            await p({
+                url: `${this.spotifyApiUrl}/me/player/queue?uri=${data.track.uri}`,
+                method: 'POST',
+                headers: this._headers(token)
+            })
+            return data.track;
+        });
     }
 
     async searchTrack(channel, query) {
         return await this._checkToken(channel).then(async (token) => {
             const res = await p({
                 url: `${this.spotifyApiUrl}/search?q=${query}&type=track&limit=1`,
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: this._headers(token)
             });
             const data = JSON.parse(res.body.toString())
             if (!data.tracks.items[0]) return false;
             return {token: token, track: data.tracks.items[0]};
+        });
+    };
+
+    async getQueue(channel) {
+        return this._checkToken(channel).then(async (token) => {
+            const res = await p({
+                url: `${this.spotifyApiUrl}/me/player/queue`,
+                headers: this._headers(token)
+            });
+            return res.body.toString()
         });
     };
 
@@ -80,13 +79,12 @@ export class SpotifyApi {
                 return token
             });
 
-        };
+        }
     };
 
     async _updateToken(channel, sp_dc) {
         const res = await p({
             url: 'https://open.spotify.com/get_access_token?reason=transport&productType=web_player',
-            method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36',
@@ -97,4 +95,12 @@ export class SpotifyApi {
         db.set('user', channel, {token: data.accessToken, expiration_time: data.accessTokenExpirationTimestampMs});
         return data.accessToken;
     }
-};
+
+    _headers(token) {
+        return {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+    };
+
+}
