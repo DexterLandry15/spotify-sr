@@ -37,11 +37,7 @@ export class SpotifyWs {
                 }).catch((e) => {
                     console.error(e)
                 });
-            } else if(
-                data.payloads &&
-                data.payloads[0] &&
-                data.payloads[0].update_reason == "DEVICE_STATE_CHANGED"
-            ){
+            } else if (data.payloads?.[0]?.update_reason == "DEVICE_STATE_CHANGED") {
 
                 conn.socket.send(await this.#processMessage(data))
             }
