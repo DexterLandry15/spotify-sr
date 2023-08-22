@@ -11,7 +11,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@fastify/websocket": "^8.2.0",
     "better-sqlite3": "^8.1.0",
+    "centra": "^2.6.0",
     "discord.js": "^14.6.0",
     "dotenv": "^16.0.3",
     "fastify": "^4.8.1",
@@ -26,7 +28,7 @@
     "tough-cookie": "^4.1.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.21",
+    "nodemon": "^3.0.1",
     "pino-pretty": "^9.1.1"
   }
 }

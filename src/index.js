@@ -2,6 +2,7 @@ import tmi from 'tmi.js';
 import * as dotenv from 'dotenv';
 import { SpotifyApi } from './services/spotifyApi.js';
 import { DB } from './services/db.js';
+import { app, initWsDb } from './ws/ws_server.js'
 
 dotenv.config();
 
@@ -16,7 +17,9 @@ const client = new tmi.Client({
         },
         channels: await db.getCol('user'),
 });
+
 client.connect();
+
 client.on('message', async (channel, tags, message, self) => {
     if (self || !message.startsWith("!")) return;
 	const args = message.slice(1).split(" ");
@@ -89,4 +92,10 @@ client.on('message', async (channel, tags, message, self) => {
                 }
         }
     }
+})
+
+
+
+await app.listen({port: 3000}).then(() => {
+    initWsDb();
 })

@@ -10,10 +10,13 @@ export class DB {
 
     constructor(dbName) {
         this.db = new Database(path.join(__dirname, '../db', `${dbName}.db`), {
-            verbose: console.log,
             fileMustExist: true
         });
     };
+
+    getAll(){
+        return this.db.prepare(`SELECT * FROM users`).all();
+    }
 
     async getCol(col) {
         const data = this.db.prepare(`SELECT ${col} FROM users`).all();
